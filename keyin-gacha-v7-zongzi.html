@@ -29,8 +29,9 @@
   .ps-btn:hover{border-color:#E05B5B;color:#E05B5B;transform:scale(1.08)}
   .ps-btn:active{transform:scale(0.96)}
   .ps-btn:disabled{opacity:0.25;cursor:default;transform:none;box-shadow:none}
-  #reveal{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:200;overflow:auto;background:rgba(250,246,240,0.97);backdrop-filter:blur(6px)}
+  #reveal{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:200;overflow:auto;background:rgba(250,246,240,0.97);backdrop-filter:blur(6px);pointer-events:none}
   #reveal.show{display:flex}
+  #reveal.interactive{pointer-events:auto}
   #reveal-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;padding:12px 20px;align-items:flex-start}
   .reveal-card{display:flex;flex-direction:column;align-items:center;text-align:center;opacity:0;transform:scale(0.5);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1)}
   .reveal-card.visible{opacity:1;transform:scale(1)}
@@ -114,11 +115,12 @@
   <div id="pick-counter"></div>
   <div id="empty-msg"><div style="font-size:16px;font-weight:600;margin-bottom:4px">粽子吃完了</div><div style="font-size:13px;opacity:0.6">點擊左下角重新裝填</div></div>
   <div id="pick-select"><div class="ps-title">這次要抽幾顆？</div><div class="ps-grid"><button class="ps-btn" onclick="selectPickCount(1)">1顆</button><button class="ps-btn" onclick="selectPickCount(2)">2顆</button><button class="ps-btn" onclick="selectPickCount(3)">3顆</button><button class="ps-btn" onclick="selectPickCount(4)">4顆</button><button class="ps-btn" onclick="selectPickCount(5)">5顆</button><button class="ps-btn" onclick="selectPickCount(6)">6顆</button><button class="ps-btn" onclick="selectPickCount(8)">8顆</button><button class="ps-btn" onclick="selectPickCount(10)">10顆</button></div></div>
-  <div id="reveal"><div id="reveal-cards"></div><div id="reveal-wait" style="font-size:42px;font-weight:900;text-align:center;margin-top:20px;letter-spacing:3px;opacity:0;transition:opacity 0.6s 0.5s ease;background:linear-gradient(90deg,#E05B5B,#E8953A,#D4A833,#3EAD8E,#4A9FE0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎉 恭喜中獎！<br>請稍等，馬上為您準備獎品</div><div style="margin-top:120px;display:flex;flex-direction:column;align-items:center;gap:12px"><div class="done-hint" style="font-size:20px;color:#E05B5B;font-weight:700;letter-spacing:1px;opacity:0;transition:opacity 0.6s ease">⚠️ 請確認已經領完優惠券 ⚠️</div><button class="done-btn" onclick="closeReveal()" style="background:#b0a090;box-shadow:0 3px 12px rgba(160,140,110,0.25)">確認離開</button></div></div>
+  <div id="reveal"><div id="reveal-cards"></div><div id="reveal-wait" style="font-size:42px;font-weight:900;text-align:center;margin-top:20px;letter-spacing:3px;opacity:0;transition:opacity 0.6s 0.5s ease;background:linear-gradient(90deg,#E05B5B,#E8953A,#D4A833,#3EAD8E,#4A9FE0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎉 恭喜中獎！<br>請稍等，馬上為您準備獎品</div><div style="margin-top:120px;display:flex;flex-direction:column;align-items:center;gap:12px"><div class="done-hint" style="font-size:20px;color:#E05B5B;font-weight:700;letter-spacing:1px;opacity:0;transition:opacity 0.6s ease">⚠️ 請確認已經領完優惠券 ⚠️</div><a class="done-btn" href="https://moredrinks.my.canva.site/202606" style="background:#b0a090;box-shadow:0 3px 12px rgba(160,140,110,0.25);text-decoration:none;display:inline-block;text-align:center">確認離開</a></div></div>
 </div>
 <div id="controls">
   <button class="reset-btn" onclick="resetAll()" title="重新裝填"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a7a6a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
   <div style="flex:1"></div>
+  <button class="circle-btn" id="btn-home" style="background:rgba(230,228,224,0.4);border-color:rgba(215,212,208,0.35);color:rgba(190,185,180,0.5);width:50px;font-size:11px;box-shadow:none" onclick="goHome()">回首頁</button>
   <button class="circle-btn" id="btn-settings" style="background:rgba(230,228,224,0.4);border-color:rgba(215,212,208,0.35);color:rgba(190,185,180,0.5);width:50px;font-size:11px;box-shadow:none" onclick="tryOpenSettings()">設定</button>
 </div>
 <div id="main-action" style="display:flex;flex-direction:column;align-items:center;margin-top:12px">
@@ -249,14 +251,15 @@ function showReveal(picked){
     document.querySelectorAll(".summary-row").forEach(el=>el.classList.add("visible"));
     document.querySelectorAll(".prize-card").forEach(el=>el.classList.add("visible"));
     document.getElementById("reveal-wait").style.opacity="1";
-    setTimeout(()=>{const h=document.querySelector(".done-hint");if(h)h.style.opacity="1";document.querySelector(".done-btn").classList.add("visible");},15000);
+    setTimeout(()=>{const h=document.querySelector(".done-hint");if(h)h.style.opacity="1";document.querySelector(".done-btn").classList.add("visible");document.getElementById("reveal").classList.add("interactive");},15000);
   });
 }
 
-function closeReveal(){document.getElementById("reveal").classList.remove("show");document.getElementById("reveal-cards").innerHTML="";document.getElementById("reveal-wait").style.opacity="0";const h=document.querySelector(".done-hint");if(h)h.style.opacity="0";document.querySelector(".done-btn").classList.remove("visible");balls.forEach(bb=>{if(bb.alive)bb.wrap.classList.remove("faded");});pickedBalls=[];phase="locked";document.getElementById("lock-screen").classList.add("show");}
+function closeReveal(){document.getElementById("reveal").classList.remove("show");document.getElementById("reveal").classList.remove("interactive");document.getElementById("reveal-cards").innerHTML="";document.getElementById("reveal-wait").style.opacity="0";const h=document.querySelector(".done-hint");if(h)h.style.opacity="0";document.querySelector(".done-btn").classList.remove("visible");balls.forEach(bb=>{if(bb.alive)bb.wrap.classList.remove("faded");});pickedBalls=[];phase="locked";document.getElementById("lock-screen").classList.add("show");}
+function goHome(){if(phase!=="idle"){if(!confirm("抽獎進行中，確定要離開回首頁嗎？"))return;}location.href="https://moredrinks.my.canva.site/202606";}
 document.getElementById("lock-screen").addEventListener("click",function(e){if(e.target.closest("a"))return;pwCallback="unlock";showPwModal();});
 function unlockScreen(){document.getElementById("lock-screen").classList.remove("show");phase="idle";disableButtons(false);updateCounter();document.getElementById("hint").textContent=getAlive()>0?"":"粽子吃完了";if(getAlive()===0)document.getElementById("empty-msg").classList.add("show");}
-function resetAll(){document.getElementById("reveal").classList.remove("show");document.getElementById("reveal-cards").innerHTML="";document.querySelector(".done-btn").classList.remove("visible");document.getElementById("pick-counter").classList.remove("show");document.getElementById("pick-select").classList.remove("show");document.getElementById("arena").style.transform="";document.getElementById("lock-screen").classList.remove("show");pickedBalls=[];phase="idle";initBalls();disableButtons(false);document.getElementById("hint").textContent="";}
+function resetAll(){document.getElementById("reveal").classList.remove("show");document.getElementById("reveal").classList.remove("interactive");document.getElementById("reveal-cards").innerHTML="";document.querySelector(".done-btn").classList.remove("visible");document.getElementById("pick-counter").classList.remove("show");document.getElementById("pick-select").classList.remove("show");document.getElementById("arena").style.transform="";document.getElementById("lock-screen").classList.remove("show");pickedBalls=[];phase="idle";initBalls();disableButtons(false);document.getElementById("hint").textContent="";}
 function getAlive(){return balls.filter(b=>b.alive).length;}
 function updateCounter(){document.getElementById("counter").textContent=`剩餘 ${getAlive()} 顆`;}
 function disableButtons(v){document.getElementById("btn-shake").disabled=v;}

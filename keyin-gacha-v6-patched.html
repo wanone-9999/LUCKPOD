@@ -10,12 +10,12 @@
   body{background:#fff;font-family:'Noto Sans TC',sans-serif;overflow:hidden;user-select:none;width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
   #header{display:none}
   #hint{display:none}
-  #arena{position:relative;width:800px;height:500px;border-radius:24px;background:linear-gradient(180deg,#faf6f0,#f5efe6);box-shadow:0 2px 16px rgba(160,140,110,0.12);border:2px solid rgba(200,185,160,0.25);overflow:hidden;transition:transform 0.05s ease}
+  #arena{position:relative;width:1500px;height:620px;border-radius:24px;background:linear-gradient(180deg,#faf6f0,#f5efe6);box-shadow:0 2px 16px rgba(160,140,110,0.12);border:2px solid rgba(200,185,160,0.25);overflow:hidden;transition:transform 0.05s ease}
   .capsule-wrap{position:absolute;pointer-events:none}
   .capsule-shadow{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border-radius:50%;background:rgba(180,155,120,0.3);pointer-events:none}
   .capsule-ball{position:absolute;top:0;left:0;cursor:pointer;pointer-events:auto}
   .capsule-wrap.faded{opacity:0.12}.capsule-wrap.faded .capsule-ball{pointer-events:none}
-  #controls{display:flex;align-items:center;gap:12px;margin-top:8px;width:800px;padding:0 8px}
+  #controls{display:flex;align-items:center;gap:12px;margin-top:8px;width:1500px;padding:0 8px}
   .reset-btn{width:44px;height:44px;border-radius:50%;background:transparent;border:2.5px solid #c0b0a0;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .reset-btn:hover{border-color:#8a7a6a}
   .circle-btn{height:50px;border-radius:50%;border:3px solid;color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:all 0.2s;line-height:1}
@@ -163,7 +163,7 @@ const DEFAULT_PRIZES=[
 function loadState(){try{const r=localStorage.getItem(STORAGE_KEY);if(r){const s=JSON.parse(r);return{prizes:s.prizes||JSON.parse(JSON.stringify(DEFAULT_PRIZES)),jpCycle:s.jpCycle||20,jpCurrentBatch:s.jpCurrentBatch||0,totalRefills:s.totalRefills||0,monthlyDrawCount:s.monthlyDrawCount||0,lastResetMonth:s.lastResetMonth||"",discountCycle:s.discountCycle||3,discountCurrentBatch:s.discountCurrentBatch||0,jpDrawCount:s.jpDrawCount||0};}}catch(e){}return{prizes:JSON.parse(JSON.stringify(DEFAULT_PRIZES)),jpCycle:20,jpCurrentBatch:0,totalRefills:0,monthlyDrawCount:0,lastResetMonth:"",discountCycle:3,discountCurrentBatch:0,jpDrawCount:0};}function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({prizes,jpCycle,jpCurrentBatch,totalRefills,monthlyDrawCount,lastResetMonth,discountCycle,discountCurrentBatch,jpDrawCount}));}catch(e){}}
 let state=loadState();let prizes=state.prizes,jpCycle=state.jpCycle,jpCurrentBatch=state.jpCurrentBatch,jpDrawCount=state.jpDrawCount,totalRefills=state.totalRefills,jpCycleDraft=jpCycle,monthlyDrawCount=state.monthlyDrawCount,lastResetMonth=state.lastResetMonth,discountCycle=state.discountCycle,discountCurrentBatch=state.discountCurrentBatch,discountCycleDraft=discountCycle;
 function checkMonthlyReset(){const now=new Date();const cm=now.getFullYear()+"-"+(now.getMonth()+1);if(lastResetMonth!==cm){monthlyDrawCount=0;lastResetMonth=cm;saveState();}}
-const W=800,H=500,BALL_R=44,FLOOR=H-100;
+const W=1500,H=620,BALL_R=74,FLOOR=H-100;
 let balls=[],phase="idle",raf=null,pickedBalls=[];let pickTotal=2,tenPull=false,shakeTime=0,pwCallback=null;
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function buildPool(){const pool=[];for(const p of prizes)for(let i=0;i<p.qty;i++)pool.push(p);totalRefills++;saveState();return shuffle(pool);}
